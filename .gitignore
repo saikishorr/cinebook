@@ -1,0 +1,27 @@
+.venv/
+backend/outbox/
+.pytest_cache/
+.ruff_cache/
+**/__pycache__/
+.env
+/worker/.env
+*.csv
+.env.docker
+worker/build/
+worker/lambda.zip
+infra/terraform/discovery/
+infra/terraform/.terraform/
+infra/terraform/*.tfstate
+infra/terraform/*.tfstate.*
+infra/terraform/*.tfplan
+infra/terraform/plan.json
+infra/terraform/demo.auto.tfvars
+
+# Dependencies and build output
+node_modules/
+frontend/dist/
+**/.pytest_cache/
+
+# Local backups and editor settings
+*.rar
+.vscode/

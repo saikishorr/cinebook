@@ -1,7 +1,7 @@
 """Phase 3, Step 3.1 - connect the CineBook Assistant to the Gemini API (free tier).
 
 Run from the project folder (with the virtual environment active):
-    python infra\\scripts\\check-gemini.py
+    python scripts\\check-gemini.py
 
 What it does:
   1. Asks for your Gemini API key (typing is hidden; the key is never printed).

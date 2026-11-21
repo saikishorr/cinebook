@@ -63,8 +63,7 @@ def create_booking(request: CreateBookingRequest, background_tasks: BackgroundTa
         # The ticket belongs to the signed-in account: its email receives the confirmation.
         request = request.model_copy(update={"email": user["email"]})
     sms_phone = _sms_phone_for(request)
-    if settings.queue_backend == "inline":
-        queue.sweep_local()
+    queue.sweep_local()
     try:
         hold = get_hold_store().get_hold(request.hold_id)
     except StoreUnavailable as error:
@@ -154,14 +153,11 @@ def create_booking(request: CreateBookingRequest, background_tasks: BackgroundTa
         raise HTTPException(status_code=503, detail="Could not create booking")
 
     connection.commit()
-    # Send after commit so a worker can always read the complete booking from PostgreSQL.
+    # Confirm after commit so the confirmation always reads the complete booking from PostgreSQL.
     try:
         message = {"booking_ref": booking_ref, "booking_id": booking_id,
                    "hold_id": request.hold_id, "show_id": int(hold["show_id"])}
-        if settings.queue_backend == "inline":
-            background_tasks.add_task(queue.send_booking_message, message)
-        else:
-            queue.send_booking_message(message)
+        background_tasks.add_task(queue.send_booking_message, message)
     except Exception as error:
         # Keep the failed order for audit, while removing its seat rows so seats can be sold again.
         with connection.transaction():
@@ -169,7 +165,7 @@ def create_booking(request: CreateBookingRequest, background_tasks: BackgroundTa
                 cursor.execute("UPDATE bookings SET status = 'FAILED' WHERE id = %s", (booking_id,))
                 cursor.execute("DELETE FROM booking_seats WHERE booking_id = %s", (booking_id,))
         _release_claim(request.hold_id, booking_ref)
-        logger.warning("Could not send booking to SQS: %s", error)
+        logger.warning("Could not schedule booking confirmation: %s", error)
         raise HTTPException(status_code=503, detail="Booking service is temporarily unavailable") from error
     return {"booking_ref": booking_ref, "status": "PENDING"}
 

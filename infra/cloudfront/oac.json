@@ -1,7 +1,0 @@
-{
-  "Name": "cinebook-site-oac",
-  "Description": "CloudFront reads the CineBook site bucket",
-  "SigningProtocol": "sigv4",
-  "SigningBehavior": "always",
-  "OriginAccessControlOriginType": "s3"
-}

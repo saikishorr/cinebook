@@ -1,14 +1,18 @@
 # Booking confirmation worker
 
-This worker consumes booking messages from SQS, confirms pending bookings in PostgreSQL, releases matching seat holds in DynamoDB, and sends confirmation emails through SES v2. It safely handles duplicate SQS deliveries.
+This module confirms pending bookings in PostgreSQL. For each booking it:
 
-To run locally, copy `.env.example` to `.env`, fill in your settings, activate the project virtual environment, and run `python worker/run_local.py` from the project root. The worker will later be deployed to AWS Lambda with an SQS trigger.
+1. Locks the booking and marks it `CONFIRMED` with a simulated payment reference.
+2. Writes the chat link and the demo SMS in the same transaction (`demo_sms.py`).
+3. Releases the seat hold.
+4. Sends the confirmation email.
 
-For development without AWS, use `scripts/setup-local.ps1` and `scripts/run-local.ps1` instead.
-The API loads these worker modules by path in inline mode, injects PostgreSQL hold release and log
-email delivery, and runs confirmation after the HTTP response. No separate worker process is needed.
-Cloud cancellation emails use the existing SQS queue and this worker's existing SES configuration.
+The API loads these modules by path and runs the confirmation right after the HTTP response, so no
+separate process is needed. The API also passes in its own seat-hold release and email functions,
+and the email goes to `backend/outbox/`. Confirming the same booking twice is safe: the second run
+is skipped, so nothing is charged twice and no duplicate SMS is written.
 
-`confirm_booking.sweep_stale_pending(connection, older_than_minutes=10)` is available for a future
-scheduled Lambda. No cloud schedule is installed. Confirmation locks the booking so sweeping,
-cancellation and duplicate deliveries cannot process it concurrently.
+`confirm_booking.sweep_stale_pending(connection, older_than_minutes=10)` marks bookings stuck in
+`PENDING` as `FAILED` and frees their seats. The API calls it at startup.
+
+Run the tests from the project root: `.\.venv\Scripts\python -m pytest worker`.

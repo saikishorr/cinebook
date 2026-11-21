@@ -60,11 +60,10 @@ def get_show_seats(show_id: int, connection: Connection = Depends(get_connection
                           FROM seats AS seat JOIN shows s ON s.screen_id = seat.screen_id WHERE s.id = %s
                           ORDER BY seat.row_index NULLS LAST, seat.row_label, seat.seat_number""", (show_id,))
         seats = cursor.fetchall()
-    # DynamoDB's TTL cleanup is delayed, so ignore rows whose expiry has passed here.
     try:
         held_seats = get_hold_store().held_seat_ids(show_id)
     except StoreUnavailable as error:
-        logger.warning("Could not read seat holds for show %s; using PostgreSQL only: %s", show_id, error)
+        logger.warning("Could not read seat holds for show %s; showing bookings only: %s", show_id, error)
         held_seats = set()
     for seat in seats:
         # A confirmed or pending booking always takes precedence over a temporary hold.

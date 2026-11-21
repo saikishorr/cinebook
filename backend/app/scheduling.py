@@ -6,7 +6,7 @@ from app.programme import expand_plan, observed_plan, plan_week, week_start
 from collections import defaultdict
 
 
-def clear_hidden_shows(connection, holds_backend="postgres", now=None):
+def clear_hidden_shows(connection, now=None):
     with connection.cursor(row_factory=dict_row) as cursor:
         cursor.execute("""SELECT s.id FROM shows s JOIN movies m ON m.id = s.movie_id
                           JOIN screens sc ON sc.id = s.screen_id JOIN cinemas ci ON ci.id = sc.cinema_id
@@ -15,11 +15,6 @@ def clear_hidden_shows(connection, holds_backend="postgres", now=None):
                           AND NOT EXISTS (SELECT 1 FROM seat_holds h WHERE h.show_id = s.id AND h.expires_at > now())
                           FOR UPDATE OF s""",(now,))
         ids = [r["id"] for r in cursor.fetchall()]
-        if holds_backend == "dynamodb" and ids:
-            from app.holds import get_hold_store
-            store = get_hold_store()
-            # If AWS cannot be read we abort, rather than free a possibly held show.
-            ids = [show_id for show_id in ids if not store.held_seat_ids(show_id)]
         cursor.execute("DELETE FROM seat_holds WHERE show_id = ANY(%s) AND expires_at <= now()", (ids,))
         cursor.execute("DELETE FROM shows WHERE id = ANY(%s)", (ids,))
         return cursor.rowcount
@@ -41,32 +36,23 @@ def _delete_shows(cursor, ids):
     return cursor.rowcount
 
 
-def schedule_shows(connection, days=8, now=None, app_timezone=None, holds_backend=None, movie_ids=None, rebuild=False):
+def schedule_shows(connection, days=8, now=None, app_timezone=None, movie_ids=None, rebuild=False):
     from app.config import settings
     zone = ZoneInfo(app_timezone or settings.app_timezone)
-    backend = holds_backend or settings.holds_backend
     now = now or datetime.now(timezone.utc)
     today = now.astimezone(zone).date()
     first_week = week_start(today)
     start = datetime.combine(first_week-timedelta(days=7),time.min,zone)
     end = datetime.combine(today+timedelta(days=days),time.min,zone)
-    held_cache = {}
 
     def is_protected(row):
-        if row["protected"]:
-            return True
-        if backend == "dynamodb" and row["start_time"] > now:
-            from app.holds import get_hold_store
-            if row["id"] not in held_cache:
-                held_cache[row["id"]] = bool(get_hold_store().held_seat_ids(row["id"]))
-            return held_cache[row["id"]]
-        return False
+        return bool(row["protected"])
 
     with connection.transaction(), connection.cursor(row_factory=dict_row) as cursor:
         cursor.execute("SELECT pg_advisory_xact_lock(641902109)")
         # Capture departed films' old slot patterns before cleanup, so partners inherit them.
         before = _load_shows(cursor,start,end)
-        cleared = clear_hidden_shows(connection,backend,now=now)
+        cleared = clear_hidden_shows(connection,now=now)
         if rebuild:
             cursor.execute("""SELECT s.id, s.start_time,
                               (EXISTS (SELECT 1 FROM bookings b WHERE b.show_id=s.id)

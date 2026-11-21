@@ -1,5 +1,5 @@
-"""Worker tests use the LOCAL database in worker/.env. Email and seat-hold calls are replaced
-with fakes, so nothing is sent and AWS is not contacted. Test data is removed afterwards."""
+"""Worker tests use the LOCAL database in worker/.env (or backend/.env). Email and seat-hold calls
+are replaced with fakes, so nothing is sent. Test data is removed afterwards."""
 import os
 import secrets
 
@@ -10,7 +10,6 @@ from psycopg.rows import dict_row
 
 load_dotenv(os.path.join(os.path.dirname(os.path.dirname(__file__)), ".env"))
 load_dotenv(os.path.join(os.path.dirname(os.path.dirname(os.path.dirname(__file__))), "backend", ".env"))
-os.environ.setdefault("AWS_REGION", "ap-south-1")
 
 import confirm_booking  # noqa: E402  (after the settings are loaded)
 
@@ -18,17 +17,17 @@ DEMO = "+919800000001"
 
 
 @pytest.fixture(autouse=True)
-def fake_aws(monkeypatch):
-    sent = []
-    monkeypatch.setattr(confirm_booking, "_release_hold", lambda *args: None)
-    monkeypatch.setattr(confirm_booking, "_send_confirmation", lambda booking, seats: sent.append(booking["email"]))
+def sent_emails(monkeypatch):
     monkeypatch.setenv("SMS_DEMO_NUMBERS", f"{DEMO},+919800000002")
     monkeypatch.setenv("PUBLIC_SITE_URL", "http://localhost:5173")
-    import boto3
-    def no_aws(*args, **kwargs):
-        raise AssertionError("Worker tests must not contact AWS")
-    monkeypatch.setattr(boto3, "client", no_aws)
-    return sent
+    return []
+
+
+def confirm(connection, body, sent=None):
+    """Run the confirmation with a no-op hold release and an email that is only recorded."""
+    sent = [] if sent is None else sent
+    return confirm_booking._process_record(connection, body, release_hold=lambda *args: None,
+                                           send_email=lambda booking, seats: sent.append(booking["email"]))
 
 
 @pytest.fixture

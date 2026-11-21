@@ -1,12 +1,12 @@
 """Injected side effects and the stale message recovery boundary."""
 import importlib.util
-import json
 from pathlib import Path
 
 import pytest
 
 import confirm_booking
 import demo_sms
+from tests.conftest import confirm
 
 
 def test_injected_effects(connection, make_booking):
@@ -18,7 +18,7 @@ def test_injected_effects(connection, make_booking):
     assert result.startswith("CONFIRMED")
     assert releases[0][0] == body["hold_id"]
     assert len(releases[0][2]) == 2 and len(emails[0][1]) == 2
-    assert confirm_booking._process_record(connection, body).startswith("SKIPPED")
+    assert confirm(connection, body).startswith("SKIPPED")
     assert len(releases) == 1 and len(emails) == 1
 
 
@@ -38,34 +38,13 @@ def test_sweeper_and_late_worker(connection, make_booking):
     confirm_booking.sweep_stale_pending(connection)
     assert connection.execute("SELECT status FROM bookings WHERE id = %s", (stale["booking_id"],)).fetchone()["status"] == "FAILED"
     assert connection.execute("SELECT status FROM bookings WHERE id = %s", (recent["booking_id"],)).fetchone()["status"] == "PENDING"
-    assert confirm_booking._process_record(connection, stale).startswith("SKIPPED")
+    assert confirm(connection, stale).startswith("SKIPPED")
     assert not connection.execute("SELECT 1 FROM booking_seats WHERE booking_id = %s", (stale["booking_id"],)).fetchone()
 
 
 def test_allowed_numbers_normalized(monkeypatch):
     monkeypatch.setenv("SMS_DEMO_NUMBERS", "9800000000, junk, +91 98000-00001,09800000000")
     assert demo_sms._allowed_numbers() == {"+919800000000", "+919800000001"}
-
-
-def test_queued_cancellation_email(connection, monkeypatch):
-    calls = []
-    monkeypatch.setattr(confirm_booking, "ses", type("SES", (), {"send_email": lambda self, **kwargs: calls.append(kwargs)})())
-    monkeypatch.setenv("SES_SENDER_EMAIL", "sender@example.com")
-    booking = {"booking_ref": "BKABC123", "email": "test@example.com", "refund_ref": "SIMREF-123"}
-    body = {"action": "CANCELLED", "booking_ref": booking["booking_ref"], "booking": booking}
-    event = {"Records": [{"messageId": "cancel", "body": json.dumps(body)}]}
-    assert confirm_booking.lambda_handler(event, None) == {"batchItemFailures": []}
-    assert calls[0]["FromEmailAddress"] == "sender@example.com"
-    assert "SIMREF-123" in calls[0]["Content"]["Simple"]["Body"]["Text"]["Data"]
-
-
-def test_import_without_region_or_credentials(monkeypatch):
-    monkeypatch.delenv("AWS_REGION", raising=False)
-    monkeypatch.delenv("AWS_DEFAULT_REGION", raising=False)
-    spec = importlib.util.spec_from_file_location("isolated_confirmation", Path(confirm_booking.__file__))
-    module = importlib.util.module_from_spec(spec)
-    spec.loader.exec_module(module)
-    assert module.dynamodb is None and module.ses is None
 
 
 @pytest.mark.parametrize("raw", [None, "bad", "9800000000", "09800000000", "919800000000", "00919800000000", "+1 (415) 555-0123"])

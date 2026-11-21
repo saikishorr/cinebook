@@ -34,21 +34,15 @@ def demo_settings(monkeypatch):
     bookings.lookup_limiter.reset()
     bookings.cancel_limiter.reset()
     admin.login_failures.reset()
-    monkeypatch.setattr(settings, "holds_backend", "postgres")
-    monkeypatch.setattr(settings, "queue_backend", "inline")
-    monkeypatch.setattr(settings, "email_backend", "log")
     # Phase 3: the tests never call a real AI model - a stand-in answers instead.
     chat.limiter.reset()
     monkeypatch.setattr(settings, "chat_provider", "fake")
     monkeypatch.setattr(settings, "chat_model_id", "fake-model")
     monkeypatch.setattr(chat_llm, "fake_responder", chat_llm._default_fake)
-    # A regression must fail locally instead of contacting AWS or a live model.
-    import boto3
+    # A regression must fail locally instead of contacting a live model or the network.
     import urllib.request
     def no_network(*args, **kwargs):
-        raise AssertionError("Tests must not contact AWS or the network")
-    monkeypatch.setattr(boto3, "client", no_network)
-    monkeypatch.setattr(boto3, "resource", no_network)
+        raise AssertionError("Tests must not contact the network")
     monkeypatch.setattr(urllib.request, "urlopen", no_network)
 
 

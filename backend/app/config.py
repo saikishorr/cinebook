@@ -1,6 +1,5 @@
 from functools import lru_cache
 from pathlib import Path
-from typing import Literal
 from pydantic import field_validator, model_validator
 from pydantic_settings import BaseSettings, SettingsConfigDict
 from app.phone import parse_number_list
@@ -10,14 +9,9 @@ class Settings(BaseSettings):
     database_url: str
     app_timezone: str = "Asia/Kolkata"
     cors_origins: str = "*"
-    dynamodb_table: str = "seat-holds"
-    aws_region: str = "ap-south-1"
     hold_seconds: int = 300
-    holds_backend: Literal["dynamodb", "postgres"] = "dynamodb"
-    queue_backend: Literal["sqs", "inline"] = "sqs"
-    email_backend: Literal["ses", "log"] = "ses"
-    booking_queue_url: str = ""
-    ses_sender_email: str = ""
+    # "From" address on the demo emails saved in backend/outbox/.
+    sender_email: str = "cinebook@localhost"
     cancel_cutoff_minutes: int = 120
     # Customer accounts: holding seats and paying need a signed-in customer (BookMyShow-style).
     require_login_for_booking: bool = True
@@ -30,12 +24,11 @@ class Settings(BaseSettings):
     public_site_url: str = "http://localhost:5173"
     # Shared code that opens the Demo Phone inbox. Empty = Demo Phone switched off.
     demo_phone_access_code: str = ""
-    # Phase 3: chat assistant. Set by infra/scripts/check-gemini.py (or check-bedrock.py).
-    chat_provider: str = "gemini"          # gemini | bedrock | fake (tests)
+    # Phase 3: chat assistant. Check the key and model with scripts/check-gemini.py.
+    chat_provider: str = "gemini"          # gemini | fake (tests)
     chat_model_id: str = ""                # empty = chat switched off
-    gemini_api_key: str = ""               # secret: .env locally, SecureString in Parameter Store
+    gemini_api_key: str = ""               # secret: keep it in backend/.env only
     tmdb_api_key: str = ""
-    bedrock_region: str = ""               # empty = same as aws_region
     chat_max_message_chars: int = 500
     chat_max_output_tokens: int = 300
     chat_messages_per_hour: int = 30       # per chat link
@@ -43,9 +36,7 @@ class Settings(BaseSettings):
     model_config = SettingsConfigDict(env_file=Path(__file__).resolve().parents[1] / ".env", env_file_encoding="utf-8", extra="ignore")
 
     @model_validator(mode="after")
-    def validate_queue(self):
-        if self.queue_backend == "sqs" and not self.booking_queue_url.strip():
-            raise ValueError("BOOKING_QUEUE_URL is required when QUEUE_BACKEND=sqs")
+    def validate_limits(self):
         if self.cancel_cutoff_minutes < 0 or self.api_workers < 1:
             raise ValueError("CANCEL_CUTOFF_MINUTES must be nonnegative and API_WORKERS positive")
         return self

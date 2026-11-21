@@ -1,4 +1,4 @@
-"""Database setup used by the PowerShell entry point; no psql or AWS CLI needed."""
+"""Database setup used by the PowerShell entry point; no psql needed."""
 import argparse
 import logging
 from pathlib import Path

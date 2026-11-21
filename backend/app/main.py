@@ -16,9 +16,8 @@ async def lifespan(app: FastAPI):
     pool.open()
     app.state.pool = pool
     try:
-        if settings.queue_backend == "inline":
-            from app.queue import sweep_local
-            sweep_local()
+        from app.queue import sweep_local
+        sweep_local()
         yield
     finally:
         pool.close()
@@ -50,14 +49,13 @@ app.include_router(chat.router, prefix=api_prefix)         # Phase 3
 
 @app.get("/health")
 def health(request: Request):
-    # The load balancer can use this query to check the API and database together.
+    # Checks the API and the database together.
     try:
         with request.app.state.pool.connection() as connection:
             with connection.cursor() as cursor:
                 cursor.execute("SELECT 1")
                 cursor.fetchone()
-        return {"status": "ok", "database": "ok", "holds_backend": settings.holds_backend,
-                "queue_backend": settings.queue_backend}
+        return {"status": "ok", "database": "ok"}
     except Exception as error:
         raise HTTPException(status_code=503, detail="Database is unavailable") from error
 

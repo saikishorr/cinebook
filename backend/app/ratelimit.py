@@ -1,7 +1,7 @@
 """A small in-memory rate limiter (per client address, sliding time window).
 
-Counters are per process. With API_WORKERS=2 (the Docker default), effective limits
-can double; additional servers multiply them further. Use one worker for strict local limits.
+Counters are per process. With API_WORKERS=2, effective limits
+can double. Use one worker for strict limits.
 """
 import threading
 import time
@@ -49,5 +49,5 @@ class SlidingWindowLimiter:
 
 
 def client_key(request: Request) -> str:
-    # Uvicorn runs with --proxy-headers, so this is the visitor's address, not the load balancer's.
+    # The direct client address (the API is served by Uvicorn without a proxy).
     return request.client.host if request.client else "unknown"

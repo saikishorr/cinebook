@@ -4,7 +4,6 @@ generate(system, messages) sends the instructions and the conversation to the mo
 CHAT_PROVIDER and returns its reply. Everything else in the assistant is independent of the vendor.
 
   gemini  - Google Gemini API (API key in GEMINI_API_KEY)
-  bedrock - Amazon Bedrock Converse API (IAM permissions, no key)
   fake    - a stand-in used by the automated tests: no network, no cost
 """
 import json
@@ -38,7 +37,7 @@ def is_configured() -> bool:
         return False
     if settings.chat_provider == "gemini":
         return bool(settings.gemini_api_key)
-    return settings.chat_provider in ("bedrock", "fake")
+    return settings.chat_provider == "fake"
 
 
 def generate(system: str, messages: list[dict]) -> LlmReply:
@@ -46,8 +45,6 @@ def generate(system: str, messages: list[dict]) -> LlmReply:
     provider = settings.chat_provider
     if provider == "gemini":
         return _gemini(system, messages)
-    if provider == "bedrock":
-        return _bedrock(system, messages)
     if provider == "fake":
         return LlmReply(text=fake_responder(system, messages), model=settings.chat_model_id or "fake")
     raise LlmError(f"Unknown CHAT_PROVIDER: {provider}")
@@ -88,36 +85,6 @@ def _gemini(system: str, messages: list[dict]) -> LlmReply:
     usage = result.get("usageMetadata", {})
     return LlmReply(text=text, model=settings.chat_model_id,
                     input_tokens=usage.get("promptTokenCount"), output_tokens=usage.get("candidatesTokenCount"))
-
-
-# ---------------------------------------------------------------- Amazon Bedrock (Converse API)
-_bedrock_client = None
-
-
-def _bedrock(system: str, messages: list[dict]) -> LlmReply:
-    global _bedrock_client
-    try:
-        if _bedrock_client is None:
-            import boto3
-            from botocore.config import Config
-            _bedrock_client = boto3.client(
-                "bedrock-runtime", region_name=settings.bedrock_region or settings.aws_region,
-                config=Config(connect_timeout=5, read_timeout=TIMEOUT_SECONDS, retries={"max_attempts": 2}))
-        response = _bedrock_client.converse(
-            modelId=settings.chat_model_id,
-            system=[{"text": system}],
-            messages=[{"role": m["role"], "content": [{"text": m["content"]}]} for m in messages],
-            inferenceConfig={"temperature": 0.2, "maxTokens": settings.chat_max_output_tokens},
-        )
-    except Exception as error:
-        code = getattr(error, "response", {}).get("Error", {}).get("Code", error.__class__.__name__)
-        raise LlmError(f"Bedrock request failed: {code}") from None
-    text = "".join(part.get("text", "") for part in response["output"]["message"]["content"]).strip()
-    if not text:
-        raise LlmError(f"Bedrock returned no text (stop reason: {response.get('stopReason', 'unknown')})")
-    usage = response.get("usage", {})
-    return LlmReply(text=text, model=settings.chat_model_id,
-                    input_tokens=usage.get("inputTokens"), output_tokens=usage.get("outputTokens"))
 
 
 # ---------------------------------------------------------------- Stand-in for tests

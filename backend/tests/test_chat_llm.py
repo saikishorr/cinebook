@@ -65,24 +65,6 @@ def test_gemini_empty_answer_is_an_error(gemini):
         chat_llm.generate("s", MESSAGES)
 
 
-def test_bedrock_request_and_reply(monkeypatch):
-    monkeypatch.setattr(settings, "chat_provider", "bedrock")
-    monkeypatch.setattr(settings, "chat_model_id", "some.model-v1:0")
-    calls = {}
-
-    class Client:
-        def converse(self, **kwargs):
-            calls.update(kwargs)
-            return {"output": {"message": {"content": [{"text": "[REFUSE]"}]}},
-                    "usage": {"inputTokens": 800, "outputTokens": 3}, "stopReason": "end_turn"}
-
-    monkeypatch.setattr(chat_llm, "_bedrock_client", Client())
-    reply = chat_llm.generate("SYSTEM TEXT", MESSAGES)
-    assert reply.text == "[REFUSE]" and reply.input_tokens == 800
-    assert calls["modelId"] == "some.model-v1:0" and calls["system"] == [{"text": "SYSTEM TEXT"}]
-    assert [m["role"] for m in calls["messages"]] == ["user", "assistant", "user"]
-
-
 def test_is_configured(monkeypatch):
     monkeypatch.setattr(settings, "chat_provider", "gemini")
     monkeypatch.setattr(settings, "chat_model_id", "gemini-test")

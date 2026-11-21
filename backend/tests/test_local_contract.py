@@ -251,7 +251,7 @@ def test_missing_phone_mask_and_new_booking_sweeps_old_pending(client, show, dat
     assert client.get(f"/bookings/{ref}").json()["status"] == "FAILED"
 
 
-def test_inline_startup_sweeps(monkeypatch):
+def test_startup_sweeps(monkeypatch):
     import asyncio
     from types import SimpleNamespace
     from app.main import lifespan
@@ -281,14 +281,13 @@ def test_inline_failure_stays_pending_then_sweeper_frees_seats(client, show, mon
         assert not conn.execute("SELECT 1 FROM booking_seats WHERE show_id = %s", (show["id"],)).fetchone()
 
 
-def test_settings_queue_validation_and_cloud_defaults(monkeypatch):
-    for key in ("HOLDS_BACKEND", "QUEUE_BACKEND", "EMAIL_BACKEND", "BOOKING_QUEUE_URL"):
+def test_settings_defaults_and_validation(monkeypatch):
+    for key in ("CANCEL_CUTOFF_MINUTES", "SENDER_EMAIL", "API_WORKERS"):
         monkeypatch.delenv(key, raising=False)
-    with pytest.raises(ValueError, match="BOOKING_QUEUE_URL is required"):
-        Settings(_env_file=None, database_url="postgresql://localhost/test", booking_queue_url="")
-    local = Settings(_env_file=None, database_url="postgresql://localhost/test", queue_backend="inline")
-    assert local.holds_backend == "dynamodb" and local.email_backend == "ses"
-    assert local.cancel_cutoff_minutes == 120
+    defaults = Settings(_env_file=None, database_url="postgresql://localhost/test")
+    assert defaults.cancel_cutoff_minutes == 120 and defaults.sender_email == "cinebook@localhost"
+    with pytest.raises(ValueError, match="CANCEL_CUTOFF_MINUTES"):
+        Settings(_env_file=None, database_url="postgresql://localhost/test", cancel_cutoff_minutes=-1)
 
 
 def test_dependency_pins_match_tested_versions():
@@ -337,7 +336,7 @@ def test_request_id_logs_and_cors(client, monkeypatch, caplog):
     assert "access-control-allow-credentials" not in response.headers
     assert any(r.message == "request log test" and r.request_id == seen[0] for r in caplog.records)
     health = client.get("/health").json()
-    assert health == {"status": "ok", "database": "ok", "holds_backend": "postgres", "queue_backend": "inline"}
+    assert health == {"status": "ok", "database": "ok"}
 
 
 @pytest.mark.parametrize("raw", ["9800000000", "09800000000", "919800000000", "+91 98000-00000", "00919800000000", "+14155550123", "bad", "", None])

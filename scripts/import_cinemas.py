@@ -192,7 +192,6 @@ def load_curated(path=CURATED):
 
 
 def _can_relayout(cursor, screen_id):
-    from app.config import settings
     # Lock show parents before checking: new bookings/holds cannot acquire a foreign-key
     # lock and slip in between this check and seat deletion.
     cursor.execute("SELECT id FROM shows WHERE screen_id = %s FOR UPDATE", (screen_id,))
@@ -203,10 +202,6 @@ def _can_relayout(cursor, screen_id):
     cursor.execute("SELECT 1 FROM seat_holds WHERE show_id = ANY(%s) AND expires_at > now() LIMIT 1", (show_ids,))
     if cursor.fetchone():
         return False
-    if settings.holds_backend == "dynamodb" and show_ids:
-        from app.holds import get_hold_store
-        if any(get_hold_store().held_seat_ids(show_id) for show_id in show_ids):
-            return False
     cursor.execute("DELETE FROM seat_holds WHERE show_id = ANY(%s) AND expires_at <= now()", (show_ids,))
     return True
 

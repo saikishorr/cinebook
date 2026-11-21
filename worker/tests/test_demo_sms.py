@@ -1,11 +1,9 @@
 """Step 2.4: the worker creates the chat link and the demo SMS when it confirms a booking."""
-import json
 import re
 from datetime import datetime, timezone
 
-import confirm_booking
 from demo_sms import SMS_LIMIT, build_sms_text
-from tests.conftest import DEMO
+from tests.conftest import DEMO, confirm
 
 WHEN = datetime(2026, 10, 12, 14, 0, tzinfo=timezone.utc)          # 7:30 PM in India
 
@@ -23,7 +21,7 @@ def test_normal_message_fits_one_sms():
 def test_long_seat_list_and_title_are_shortened():
     seats = [f"F{n}" for n in range(1, 13)]
     text = build_sms_text("BKA50LS9", "A Very Long Movie Title That Goes On And On Forever", WHEN, "Screen 2",
-                          seats, "https://d1234abcd5678ef.cloudfront.net/c/Ab3dEf7hJk")
+                          seats, "https://cinebook.example.com/c/Ab3dEf7hJk")
     assert len(text) <= SMS_LIMIT
     assert "F1 +11 more" in text
     assert text.endswith("/c/Ab3dEf7hJk")                       # the link is never cut
@@ -38,9 +36,6 @@ def test_long_cinema_and_movie_stay_within_160_characters():
 
 
 # ---------------------------------------------------------------- the worker with the local database
-def _run(body):
-    event = {"Records": [{"messageId": "m1", "body": json.dumps(body)}]}
-    return confirm_booking.lambda_handler(event, None)
 
 
 def _rows(connection, booking_id):
@@ -51,42 +46,42 @@ def _rows(connection, booking_id):
         return links, cur.fetchall()
 
 
-def test_confirmation_writes_link_and_sms(connection, make_booking, fake_aws):
+def test_confirmation_writes_link_and_sms(connection, make_booking, sent_emails):
     body = make_booking()
-    assert _run(body) == {"batchItemFailures": []}
+    assert confirm(connection, body, sent_emails).startswith("CONFIRMED")
     links, sms = _rows(connection, body["booking_id"])
     assert len(links) == 1 and re.fullmatch(r"[A-Za-z0-9]{10}", links[0]["code"])
     assert len(sms) == 1 and sms[0]["to_phone"] == DEMO
     assert sms[0]["body"].endswith(f"/c/{links[0]['code']}")
     assert body["booking_ref"] in sms[0]["body"]
-    assert len(fake_aws) == 1                                      # the email still goes out
+    assert len(sent_emails) == 1                                      # the email still goes out
 
 
 def test_repeated_message_does_not_duplicate(connection, make_booking):
     body = make_booking()
-    _run(body)
-    _run(body)                                                     # SQS can deliver a message twice
+    confirm(connection, body)
+    confirm(connection, body)                                      # a repeated confirmation
     links, sms = _rows(connection, body["booking_id"])
     assert len(links) == 1 and len(sms) == 1
 
 
 def test_no_consent_means_no_link_and_no_sms(connection, make_booking):
     body = make_booking(sms_phone=None, sms_consent=False)
-    _run(body)
+    confirm(connection, body)
     assert _rows(connection, body["booking_id"]) == ([], [])
 
 
 def test_number_removed_from_demo_list_is_skipped(connection, make_booking, monkeypatch):
     body = make_booking()
     monkeypatch.setenv("SMS_DEMO_NUMBERS", "+919800000002")
-    assert _run(body) == {"batchItemFailures": []}                 # booking still confirmed
+    assert confirm(connection, body).startswith("CONFIRMED")       # booking still confirmed
     assert _rows(connection, body["booking_id"]) == ([], [])
 
 
 def test_sms_failure_never_undoes_the_booking(connection, make_booking, monkeypatch):
     body = make_booking()
     monkeypatch.setattr("demo_sms.build_sms_text", lambda *args: 1 / 0)   # simulate a bug
-    assert _run(body) == {"batchItemFailures": []}
+    assert confirm(connection, body).startswith("CONFIRMED")
     with connection.cursor() as cur:
         cur.execute("SELECT status FROM bookings WHERE id = %s", (body["booking_id"],))
         assert cur.fetchone()["status"] == "CONFIRMED"

@@ -246,7 +246,7 @@ def main() -> int:
     parser = argparse.ArgumentParser(description="Evaluate the CineBook Assistant against the configured model.")
     parser.add_argument("--delay", type=float, default=5.0, help="seconds between questions (default 5)")
     parser.add_argument("--group", help="run only one group, e.g. Off-topic")
-    parser.add_argument("--provider", choices=["fake", "gemini", "bedrock"], help="override provider for this run only")
+    parser.add_argument("--provider", choices=["fake", "gemini"], help="override provider for this run only")
     args = parser.parse_args()
 
     if args.provider:
@@ -257,7 +257,7 @@ def main() -> int:
         print("FAKE provider: offline API/context regression, not real-model evaluation.")
 
     if not chat_llm.is_configured():
-        print("No chat model is configured in backend\\.env - run infra\\scripts\\check-gemini.py first.")
+        print("No chat model is configured in backend\\.env - run scripts\\check-gemini.py first.")
         return 1
     settings.chat_messages_per_hour = 100000                   # the hourly limit has its own automated test
     print(f"Model: {settings.chat_provider} / {settings.chat_model_id}")

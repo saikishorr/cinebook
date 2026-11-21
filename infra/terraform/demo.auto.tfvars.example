@@ -1,0 +1,2 @@
+# Copy to demo.auto.tfvars (git-ignored) - or let infra\scripts\setup-demo-sms.ps1 write it for you.
+sms_demo_numbers = ["+919800000000"]

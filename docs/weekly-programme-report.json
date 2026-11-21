@@ -1,0 +1,493 @@
+{
+  "generated_at": "2026-11-20T22:20:57.275858+05:30",
+  "timezone": "Asia/Kolkata",
+  "window": [
+    "2026-11-20",
+    "2026-11-27"
+  ],
+  "upcoming_shows_in_window": 3372,
+  "scheduled_shows_in_window_including_past_today": 3456,
+  "all_database_shows": 3584,
+  "weekly_lineup_continuity": {
+    "pairs": 240,
+    "complete": 240,
+    "share_percent": 100.0,
+    "gaps": []
+  },
+  "all_pairs_including_protected_only": {
+    "pairs": 241,
+    "complete": 240,
+    "share_percent": 99.59,
+    "gaps": [
+      {
+        "cinema": "PVR Director's Cut, KOPA Mall",
+        "film": "ENE Repeat",
+        "week": "2026-11-20",
+        "missing_days": [
+          "2026-11-22",
+          "2026-11-23",
+          "2026-11-24",
+          "2026-11-25",
+          "2026-11-26"
+        ]
+      }
+    ]
+  },
+  "protected_only_exceptions": [
+    {
+      "cinema": "PVR Director's Cut, KOPA Mall",
+      "film": "ENE Repeat",
+      "times": [
+        "2026-11-21T09:50:00+05:30"
+      ]
+    }
+  ],
+  "daily_coverage": [
+    {
+      "date": "2026-11-20",
+      "partial_today": true,
+      "films_at_two_or_more_cinemas": 0,
+      "active_films": 32,
+      "exceptions": [
+        {
+          "film": "Aadi Anant",
+          "cinemas": 0
+        },
+        {
+          "film": "Aakasamlo Oka Tara",
+          "cinemas": 0
+        },
+        {
+          "film": "Avengers: Doomsday",
+          "cinemas": 0
+        },
+        {
+          "film": "Bachelor Party D'eux",
+          "cinemas": 0
+        },
+        {
+          "film": "Doraemon the Movie: New Nobita and the Castle of the Undersea Devil",
+          "cinemas": 1
+        },
+        {
+          "film": "Drishyam: The Conclusion",
+          "cinemas": 0
+        },
+        {
+          "film": "Ebenezer",
+          "cinemas": 0
+        },
+        {
+          "film": "ENE Repeat",
+          "cinemas": 0
+        },
+        {
+          "film": "Ghost Soldier",
+          "cinemas": 0
+        },
+        {
+          "film": "Godzilla Minus Zero",
+          "cinemas": 0
+        },
+        {
+          "film": "Gondhal",
+          "cinemas": 0
+        },
+        {
+          "film": "How to Rob a Bank",
+          "cinemas": 0
+        },
+        {
+          "film": "I Play Rocky",
+          "cinemas": 0
+        },
+        {
+          "film": "Jijai",
+          "cinemas": 0
+        },
+        {
+          "film": "Kaali Kheti",
+          "cinemas": 0
+        },
+        {
+          "film": "Maitreyaa",
+          "cinemas": 0
+        },
+        {
+          "film": "Nanhey Dil",
+          "cinemas": 0
+        },
+        {
+          "film": "O.M: Operation Mole",
+          "cinemas": 0
+        },
+        {
+          "film": "Party Animals",
+          "cinemas": 0
+        },
+        {
+          "film": "Patrisarkar 1942",
+          "cinemas": 0
+        },
+        {
+          "film": "Pratap",
+          "cinemas": 0
+        },
+        {
+          "film": "Pyre",
+          "cinemas": 0
+        },
+        {
+          "film": "Rajini: The Jailer 2",
+          "cinemas": 0
+        },
+        {
+          "film": "Ramayana",
+          "cinemas": 0
+        },
+        {
+          "film": "Ruff and Tuff Kanya",
+          "cinemas": 0
+        },
+        {
+          "film": "Sathyavan Savithiri",
+          "cinemas": 0
+        },
+        {
+          "film": "Scene",
+          "cinemas": 0
+        },
+        {
+          "film": "Shankarabharanna",
+          "cinemas": 0
+        },
+        {
+          "film": "The Cat in the Hat",
+          "cinemas": 0
+        },
+        {
+          "film": "The Hunger Games: Sunrise on the Reaping",
+          "cinemas": 0
+        },
+        {
+          "film": "Udta Teer",
+          "cinemas": 0
+        },
+        {
+          "film": "Wildwood",
+          "cinemas": 0
+        }
+      ]
+    },
+    {
+      "date": "2026-11-21",
+      "partial_today": false,
+      "films_at_two_or_more_cinemas": 32,
+      "active_films": 32,
+      "exceptions": []
+    },
+    {
+      "date": "2026-11-22",
+      "partial_today": false,
+      "films_at_two_or_more_cinemas": 32,
+      "active_films": 32,
+      "exceptions": []
+    },
+    {
+      "date": "2026-11-23",
+      "partial_today": false,
+      "films_at_two_or_more_cinemas": 32,
+      "active_films": 32,
+      "exceptions": []
+    },
+    {
+      "date": "2026-11-24",
+      "partial_today": false,
+      "films_at_two_or_more_cinemas": 32,
+      "active_films": 32,
+      "exceptions": []
+    },
+    {
+      "date": "2026-11-25",
+      "partial_today": false,
+      "films_at_two_or_more_cinemas": 32,
+      "active_films": 32,
+      "exceptions": []
+    },
+    {
+      "date": "2026-11-26",
+      "partial_today": false,
+      "films_at_two_or_more_cinemas": 32,
+      "active_films": 32,
+      "exceptions": []
+    },
+    {
+      "date": "2026-11-27",
+      "partial_today": false,
+      "films_at_two_or_more_cinemas": 32,
+      "active_films": 32,
+      "exceptions": []
+    }
+  ],
+  "rajhans": [
+    {
+      "film": "Aadi Anant",
+      "days": [
+        "2026-11-21",
+        "2026-11-22",
+        "2026-11-23",
+        "2026-11-24",
+        "2026-11-25",
+        "2026-11-26",
+        "2026-11-27"
+      ],
+      "times_by_day": {
+        "2026-11-21": [
+          "13:30",
+          "19:35"
+        ],
+        "2026-11-22": [
+          "13:30",
+          "19:35"
+        ],
+        "2026-11-23": [
+          "13:30",
+          "19:35"
+        ],
+        "2026-11-24": [
+          "13:30",
+          "19:35"
+        ],
+        "2026-11-25": [
+          "13:30",
+          "19:35"
+        ],
+        "2026-11-26": [
+          "13:30",
+          "19:35"
+        ],
+        "2026-11-27": [
+          "13:30",
+          "19:35"
+        ]
+      }
+    },
+    {
+      "film": "Godzilla Minus Zero",
+      "days": [
+        "2026-11-21",
+        "2026-11-22",
+        "2026-11-23",
+        "2026-11-24",
+        "2026-11-25",
+        "2026-11-26",
+        "2026-11-27"
+      ],
+      "times_by_day": {
+        "2026-11-21": [
+          "09:10",
+          "11:45",
+          "14:20",
+          "16:55",
+          "19:30",
+          "22:05"
+        ],
+        "2026-11-22": [
+          "09:10",
+          "11:45",
+          "14:20",
+          "16:55",
+          "19:30",
+          "22:05"
+        ],
+        "2026-11-23": [
+          "09:10",
+          "11:45",
+          "14:20",
+          "16:55",
+          "19:30",
+          "22:05"
+        ],
+        "2026-11-24": [
+          "09:10",
+          "11:45",
+          "14:20",
+          "16:55",
+          "19:30",
+          "22:05"
+        ],
+        "2026-11-25": [
+          "09:10",
+          "11:45",
+          "14:20",
+          "16:55",
+          "19:30",
+          "22:05"
+        ],
+        "2026-11-26": [
+          "09:10",
+          "11:45",
+          "14:20",
+          "16:55",
+          "19:30",
+          "22:05"
+        ],
+        "2026-11-27": [
+          "09:10",
+          "11:45",
+          "14:20",
+          "16:55",
+          "19:30",
+          "22:05"
+        ]
+      }
+    },
+    {
+      "film": "O.M: Operation Mole",
+      "days": [
+        "2026-11-21",
+        "2026-11-22",
+        "2026-11-23",
+        "2026-11-24",
+        "2026-11-25",
+        "2026-11-26",
+        "2026-11-27"
+      ],
+      "times_by_day": {
+        "2026-11-21": [
+          "10:10",
+          "16:15",
+          "22:20"
+        ],
+        "2026-11-22": [
+          "10:10",
+          "16:15",
+          "22:20"
+        ],
+        "2026-11-23": [
+          "10:10",
+          "16:15",
+          "22:20"
+        ],
+        "2026-11-24": [
+          "10:10",
+          "16:15",
+          "22:20"
+        ],
+        "2026-11-25": [
+          "10:10",
+          "16:15",
+          "22:20"
+        ],
+        "2026-11-26": [
+          "10:10",
+          "16:15",
+          "22:20"
+        ],
+        "2026-11-27": [
+          "10:10",
+          "16:15",
+          "22:20"
+        ]
+      }
+    },
+    {
+      "film": "Patrisarkar 1942",
+      "days": [
+        "2026-11-21",
+        "2026-11-22",
+        "2026-11-23",
+        "2026-11-24",
+        "2026-11-25",
+        "2026-11-26",
+        "2026-11-27"
+      ],
+      "times_by_day": {
+        "2026-11-21": [
+          "12:10",
+          "17:30",
+          "22:50"
+        ],
+        "2026-11-22": [
+          "12:10",
+          "17:30",
+          "22:50"
+        ],
+        "2026-11-23": [
+          "12:10",
+          "17:30",
+          "22:50"
+        ],
+        "2026-11-24": [
+          "12:10",
+          "17:30",
+          "22:50"
+        ],
+        "2026-11-25": [
+          "12:10",
+          "17:30",
+          "22:50"
+        ],
+        "2026-11-26": [
+          "12:10",
+          "17:30",
+          "22:50"
+        ],
+        "2026-11-27": [
+          "12:10",
+          "17:30",
+          "22:50"
+        ]
+      }
+    },
+    {
+      "film": "Pratap",
+      "days": [
+        "2026-11-21",
+        "2026-11-22",
+        "2026-11-23",
+        "2026-11-24",
+        "2026-11-25",
+        "2026-11-26",
+        "2026-11-27"
+      ],
+      "times_by_day": {
+        "2026-11-21": [
+          "09:30",
+          "14:50",
+          "20:10"
+        ],
+        "2026-11-22": [
+          "09:30",
+          "14:50",
+          "20:10"
+        ],
+        "2026-11-23": [
+          "09:30",
+          "14:50",
+          "20:10"
+        ],
+        "2026-11-24": [
+          "09:30",
+          "14:50",
+          "20:10"
+        ],
+        "2026-11-25": [
+          "09:30",
+          "14:50",
+          "20:10"
+        ],
+        "2026-11-26": [
+          "09:30",
+          "14:50",
+          "20:10"
+        ],
+        "2026-11-27": [
+          "09:30",
+          "14:50",
+          "20:10"
+        ]
+      }
+    }
+  ]
+}

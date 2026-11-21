@@ -1,0 +1,19 @@
+"""The API's temporary seat ownership contract, independent of storage."""
+from typing import Protocol
+
+
+class SeatsUnavailable(Exception):
+    """At least one seat already belongs to another hold."""
+
+
+class StoreUnavailable(Exception):
+    """The hold service could not complete an operation."""
+
+
+class HoldStore(Protocol):
+    def create_hold(self, hold_id: str, show_id: int, seat_ids: list[int], expires_at: int, created_at: int) -> None: ...
+    def get_hold(self, hold_id: str) -> dict | None: ...
+    def claim_hold(self, hold_id: str, booking_ref: str) -> tuple[str, str | None]: ...
+    def unclaim_hold(self, hold_id: str, booking_ref: str) -> None: ...
+    def release_hold(self, hold_id: str, show_id: int, seat_ids: list[int]) -> None: ...
+    def held_seat_ids(self, show_id: int) -> set[int]: ...

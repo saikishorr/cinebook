@@ -1,0 +1,121 @@
+{
+  "title": "Help & info",
+  "updated": "November 2026",
+  "notice": "CineBook is a training demo listing 20 curated real Pune and Pimpri-Chinchwad cinemas. It is not affiliated with these cinemas. Showtimes, prices and seat layouts are simulated. DEMO TICKET - not valid for entry. Payments and refunds are simulated; no real money is taken.",
+  "sections": [
+    {
+      "id": "booking",
+      "title": "Booking tickets",
+      "items": [
+        {
+          "q": "How do I book?",
+          "a": "Choose a film, cinema and simulated showtime, select your seats and click Hold seats. Enter your name and email and confirm the simulated payment. The demo ticket appears on screen and is emailed to you. It is not valid for entry to the real cinema."
+        },
+        {
+          "q": "How long are my seats held?",
+          "a": "Seats are held for 5 minutes while you complete checkout. If the timer runs out, the seats are released and you can choose again."
+        },
+        {
+          "q": "How many seats can I book at once?",
+          "a": "Up to 10 seats in one booking."
+        },
+        {
+          "q": "What are Regular, Prime and Recliner seats?",
+          "a": "Regular seats form the front block, Prime (Premium) seats the middle or balcony, and Recliners the rear lounge-style rows. Recliners cost more. Wheelchair-accessible Regular seats are marked on the demo seat map. Aisles and gaps are not seats. These editable training layouts do not guarantee the real hall layout, facilities or accessibility."
+        },
+        {
+          "q": "How will I receive my ticket?",
+          "a": "Your ticket is shown on the confirmation page and emailed to you. If you ticked the SMS option, you also receive an SMS with a link to this chat. Keep your booking reference, which starts with BK."
+        }
+      ]
+    },
+    {
+      "id": "visit",
+      "title": "On the day",
+      "items": [
+        {
+          "q": "What time should I arrive?",
+          "a": "For the training flow, plan to arrive at least 20 minutes before the simulated show. This is demo guidance only: your CineBook ticket is not valid for entry. Real arrival and admission rules vary by cinema."
+        },
+        {
+          "q": "What if I am late?",
+          "a": "Admission and late-entry policies vary by cinema. CineBook does not know them. Its showtimes and tickets are simulated."
+        },
+        {
+          "q": "What do I need to show at the entrance?",
+          "a": "CineBook demo tickets cannot be used at a real cinema entrance. Make a real booking directly with the cinema or an authorised ticket seller."
+        },
+        {
+          "q": "What do the certificates U, UA and A mean?",
+          "a": "U is suitable for all ages. UA means parental guidance is advised for children under 12. A is for adults only: you must be 18 or older and may be asked for photo ID."
+        },
+        {
+          "q": "Do children need a ticket?",
+          "a": "Child admission and ticket rules vary by real cinema. CineBook does not know those facilities or policies; all CineBook tickets are demo tickets."
+        }
+      ]
+    },
+    {
+      "id": "changes",
+      "title": "Changes, cancellations and refunds",
+      "items": [
+        {
+          "q": "Can I cancel my booking?",
+          "a": "Yes. Confirmed demo bookings can be cancelled online on the booking page up to 2 hours before the simulated show starts, using the booking reference and email. This chat cannot cancel bookings. For real cinema tickets, use the original booking provider; CineBook has no box office."
+        },
+        {
+          "q": "How do refunds work?",
+          "a": "Cancelling a CineBook demo booking creates a simulated refund reference and releases its generated seats. No money is taken or refunded. Real cinema refunds are handled by the original ticket provider."
+        },
+        {
+          "q": "Can I change my seats or showtime?",
+          "a": "CineBook cannot change seats or showtimes. Cancel your demo booking online up to 2 hours before the simulated show and make another demo booking. This does not affect any real cinema ticket."
+        },
+        {
+          "q": "What if the show is cancelled by the cinema?",
+          "a": "CineBook operates simulated shows only. For an actual cinema cancellation or refund, check your real ticket provider."
+        }
+      ]
+    },
+    {
+      "id": "facilities",
+      "title": "Facilities",
+      "items": [
+        {
+          "q": "Is there parking?",
+          "a": "Parking, food and accessibility vary by cinema. CineBook does not know the facilities of these real cinemas and must not invent them. Check directly with the cinema; CineBook is a training demo."
+        },
+        {
+          "q": "Is food available?",
+          "a": "Parking, food and accessibility vary by cinema. CineBook does not know the facilities of these real cinemas and must not invent them. Check directly with the cinema; CineBook is a training demo."
+        },
+        {
+          "q": "Is the cinema wheelchair accessible?",
+          "a": "Parking, food and accessibility vary by cinema. CineBook does not know the facilities of these real cinemas and must not invent them. Check directly with the cinema; CineBook is a training demo."
+        },
+        {
+          "q": "How many screens are there?",
+          "a": "CineBook currently lists 20 real cinemas from a curated Pune directory. Its Audi and VIP screens use generated demo layouts. Luxury and VIP audis use an all-recliner lounge layout. These are training maps and are not a verified count or map of real auditoriums."
+        }
+      ]
+    },
+    {
+      "id": "contact",
+      "title": "Contact",
+      "items": [
+        {
+          "q": "How do I contact CineBook?",
+          "a": "There is no customer contact or box office: CineBook is a training demo with no affiliation to the listed cinemas."
+        },
+        {
+          "q": "Where is the cinema?",
+          "a": "Each cinema page lists its curated real area, address and map location. Some coordinates identify the building and others only the area. All CineBook showtimes, prices, seats and tickets are simulated and not valid for entry."
+        },
+        {
+          "q": "I did not receive my confirmation email.",
+          "a": "In local demo mode, confirmation emails are saved locally rather than sent. Your demo booking is also available using its reference. DEMO TICKET - not valid for entry."
+        }
+      ]
+    }
+  ]
+}

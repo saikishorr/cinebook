@@ -1,0 +1,4 @@
+BEGIN;
+ALTER TABLE cinemas DROP COLUMN IF EXISTS location_precision;
+ALTER TABLE cinemas DROP COLUMN IF EXISTS source_key;
+COMMIT;

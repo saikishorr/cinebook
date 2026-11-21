@@ -1,0 +1,4 @@
+BEGIN;
+DROP INDEX IF EXISTS movies_tmdb_id_key;
+ALTER TABLE movies DROP COLUMN IF EXISTS tmdb_id;
+COMMIT;

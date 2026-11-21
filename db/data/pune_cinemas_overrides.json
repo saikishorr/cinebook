@@ -1,0 +1,6 @@
+{
+  "_readme": "OSM venue metadata only; all CineBook programmes, prices and seats are simulated. Exclude closed venues by node/ID, way/ID or relation/ID; rename and area maps override those same identifiers.",
+  "exclude": [],
+  "rename": {},
+  "area": {}
+}

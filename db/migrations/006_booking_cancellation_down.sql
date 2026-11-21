@@ -1,0 +1,6 @@
+BEGIN;
+ALTER TABLE bookings DROP COLUMN IF EXISTS customer_phone;
+ALTER TABLE bookings DROP COLUMN IF EXISTS customer_name;
+ALTER TABLE bookings DROP COLUMN IF EXISTS refund_ref;
+ALTER TABLE bookings DROP COLUMN IF EXISTS cancelled_at;
+COMMIT;

@@ -1,0 +1,23 @@
+{
+  "name": "Multiplex - medium",
+  "description": "Two aligned side aisles; front accessible seats; J-K Prime; L recliners.",
+  "rows": [
+    "A ...W..RRRRRRRRRRRR..W...",
+    "B ..RR.RRRRRRRRRRRRRR.RR..",
+    "C ..RR.RRRRRRRRRRRRRR.RR..",
+    "D ..RR.RRRRRRRRRRRRRR.RR..",
+    "E ..RR.RRRRRRRRRRRRRR.RR..",
+    "F ..RR.RRRRRRRRRRRRRR.RR..",
+    "G ..RR.RRRRRRRRRRRRRR.RR..",
+    "H ..RR.RRRRRRRRRRRRRR.RR..",
+    "I ..RR.RRRRRRRRRRRRRR.RR..",
+    "J ..PP.PPPPPPPPPPPPPP.PP..",
+    "K ..PP.PPPPPPPPPPPPPP.PP..",
+    "L ..LL..LL.LL..LL.LL..LL.."
+  ],
+  "section_names": {
+    "R": "Regular",
+    "P": "Prime",
+    "L": "Recliner"
+  }
+}

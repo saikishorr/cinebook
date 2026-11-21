@@ -1,0 +1,21 @@
+{
+  "name": "Multiplex - small",
+  "description": "Narrow front, aligned centre aisle, accessible aisle ends and rear recliners.",
+  "rows": [
+    "A ..RRRRW.WRRRR...",
+    "B .RRRRRR.RRRRRR..",
+    "C .RRRRRR.RRRRRR..",
+    "D .RRRRRR.RRRRRR..",
+    "E RRRRRRR.RRRRRRR.",
+    "F RRRRRRR.RRRRRRR.",
+    "G RRRRRRR.RRRRRRR.",
+    "H RRRRRRR.RRRRRRR.",
+    "I RRRRRRR.RRRRRRR.",
+    "J .LL.LL...LL.LL.."
+  ],
+  "section_names": {
+    "R": "Regular",
+    "P": "Prime",
+    "L": "Recliner"
+  }
+}

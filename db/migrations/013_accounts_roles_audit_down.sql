@@ -1,0 +1,15 @@
+BEGIN;
+ALTER TABLE bookings DROP COLUMN IF EXISTS cancelled_by;
+ALTER TABLE shows DROP COLUMN IF EXISTS cancelled_reason;
+DROP TABLE IF EXISTS admin_audit_log;
+ALTER TABLE admin_users DROP COLUMN IF EXISTS last_login_at;
+ALTER TABLE admin_users DROP COLUMN IF EXISTS is_active;
+ALTER TABLE admin_users DROP COLUMN IF EXISTS full_name;
+ALTER TABLE admin_users DROP CONSTRAINT IF EXISTS admin_users_role_check;
+ALTER TABLE admin_users DROP COLUMN IF EXISTS role;
+DROP INDEX IF EXISTS idx_bookings_created_at;
+DROP INDEX IF EXISTS idx_bookings_user_id;
+ALTER TABLE bookings DROP COLUMN IF EXISTS user_id;
+DROP TABLE IF EXISTS user_sessions;
+DROP TABLE IF EXISTS users;
+COMMIT;

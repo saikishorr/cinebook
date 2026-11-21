@@ -1,0 +1,4 @@
+BEGIN;
+DROP TABLE IF EXISTS seat_hold_seats;
+DROP TABLE IF EXISTS seat_holds;
+COMMIT;

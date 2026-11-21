@@ -1,0 +1,26 @@
+{
+  "name": "Multiplex - large",
+  "description": "Aligned aisles and cross-aisle G after F; L-M Prime and N-O recliners.",
+  "rows": [
+    "A ....RRW..RRRRRRRRRR..WRR....",
+    "B .RRRRRR.RRRRRRRRRRRR.RRRRRR.",
+    "C .RRRRRR.RRRRRRRRRRRR.RRRRRR.",
+    "D .RRRRRR.RRRRRRRRRRRR.RRRRRR.",
+    "E .RRRRRR.RRRRRRRRRRRR.RRRRRR.",
+    "F .RRRRRR.RRRRRRRRRRRR.RRRRRR.",
+    "G ............................",
+    "H .RRRRRR.RRRRRRRRRRRR.RRRRRR.",
+    "I .RRRRRR.RRRRRRRRRRRR.RRRRRR.",
+    "J .RRRRRR.RRRRRRRRRRRR.RRRRRR.",
+    "K .RRRRRR.RRRRRRRRRRRR.RRRRRR.",
+    "L .PPPPPP.PPPPPPPPPPPP.PPPPPP.",
+    "M .PPPPPP.PPPPPPPPPPPP.PPPPPP.",
+    "N .LL.LL..LL.LL..LL.LL..LL.LL.",
+    "O .LL.LL..LL.LL..LL.LL..LL.LL."
+  ],
+  "section_names": {
+    "R": "Regular",
+    "P": "Prime",
+    "L": "Recliner"
+  }
+}

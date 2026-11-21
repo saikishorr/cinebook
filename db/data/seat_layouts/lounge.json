@@ -1,0 +1,15 @@
+{
+  "name": "Lounge",
+  "description": "All-recliner demo lounge, four rows of paired seats.",
+  "rows": [
+    "A LL.LL.LL.LL.LL",
+    "B LL.LL.LL.LL.LL",
+    "C LL.LL.LL.LL.LL",
+    "D LL.LL.LL.LL.LL"
+  ],
+  "section_names": {
+    "R": "Regular",
+    "P": "Prime",
+    "L": "Recliner"
+  }
+}

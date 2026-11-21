@@ -1,0 +1,204 @@
+{
+  "_readme": "Films running in Pune cinemas this week. Hand-maintained: no free or legal feed lists films by city. Researched on 2026-11-20 from District's public Pune listings (district.in/movies/pune-movie-tickets). Each week, add new releases and remove films that have left Pune screens, then run .\\scripts\\import-movies.ps1. 'language' is the language the film plays in Pune (it can be a dubbed version); 'certificate' is the CBFC rating shown in Pune listings; 'tmdb_query' and 'year' help find the film on TMDB when the Pune title differs; 'tmdb_id' pins an exact TMDB film if a search picks the wrong one, and \"tmdb\": false stops matching when TMDB only has an older film with the same name.",
+  "researched_on": "2026-11-20",
+  "films": [
+    {
+      "title": "Ramayana",
+      "language": "Hindi",
+      "certificate": "U",
+      "tmdb_query": "Ramayana"
+    },
+    {
+      "title": "Avengers: Doomsday",
+      "language": "English",
+      "certificate": "UA16+"
+    },
+    {
+      "title": "Maitreyaa",
+      "language": "Marathi",
+      "certificate": "UA13+"
+    },
+    {
+      "title": "Godzilla Minus Zero",
+      "language": "Japanese",
+      "certificate": "UA16+"
+    },
+    {
+      "title": "O.M: Operation Mole",
+      "language": "Hindi",
+      "certificate": "UA16+"
+    },
+    {
+      "title": "The Hunger Games: Sunrise on the Reaping",
+      "language": "English",
+      "certificate": "UA16+"
+    },
+    {
+      "title": "Kaali Kheti",
+      "language": "Hindi",
+      "certificate": "A"
+    },
+    {
+      "title": "Pratap",
+      "language": "Hindi",
+      "certificate": "UA16+"
+    },
+    {
+      "title": "Chikeezing",
+      "language": "Marathi",
+      "certificate": "U"
+    },
+    {
+      "title": "Udta Teer",
+      "language": "Hindi",
+      "certificate": "UA13+"
+    },
+    {
+      "title": "Ruff and Tuff Kanya",
+      "language": "Gujarati",
+      "certificate": "UA13+"
+    },
+    {
+      "title": "Scene",
+      "language": "Telugu",
+      "certificate": "UA16+",
+      "year": 2026
+    },
+    {
+      "title": "Wildwood",
+      "language": "English",
+      "certificate": "UA13+"
+    },
+    {
+      "title": "Rajini: The Jailer 2",
+      "language": "Hindi",
+      "certificate": "UA16+",
+      "tmdb_query": "Jailer 2"
+    },
+    {
+      "title": "Shankarabharanna",
+      "language": "Kannada",
+      "certificate": "UA16+"
+    },
+    {
+      "title": "Bandhu",
+      "language": "Marathi",
+      "certificate": "UA13+",
+      "tmdb": false
+    },
+    {
+      "title": "Party Animals",
+      "language": "Hindi",
+      "certificate": "A",
+      "year": 2026
+    },
+    {
+      "title": "Gondhal",
+      "language": "Marathi",
+      "certificate": "UA16+",
+      "year": 2025
+    },
+    {
+      "title": "Bachelor Party D'eux",
+      "language": "Malayalam",
+      "certificate": "A"
+    },
+    {
+      "title": "Aakasamlo Oka Tara",
+      "language": "Telugu",
+      "certificate": "UA13+",
+      "also_in": [
+        "Tamil (as \"AOT\")"
+      ]
+    },
+    {
+      "title": "Ebenezer",
+      "language": "English",
+      "certificate": "UA16+",
+      "year": 2026
+    },
+    {
+      "title": "How to Rob a Bank",
+      "language": "English",
+      "certificate": "A"
+    },
+    {
+      "title": "Nanhey Dil",
+      "language": "Hindi",
+      "certificate": "U"
+    },
+    {
+      "title": "Drishyam: The Conclusion",
+      "language": "Hindi",
+      "certificate": "UA16+",
+      "tmdb_query": "Drishyam 3"
+    },
+    {
+      "title": "The Cat in the Hat",
+      "language": "English",
+      "certificate": "U",
+      "year": 2026
+    },
+    {
+      "title": "Doraemon the Movie: New Nobita and the Castle of the Undersea Devil",
+      "language": "Hindi",
+      "certificate": "U",
+      "tmdb_query": "Doraemon Nobita Castle of the Undersea Devil"
+    },
+    {
+      "title": "Ghost Soldier",
+      "language": "English",
+      "certificate": "UA16+"
+    },
+    {
+      "title": "Jijai",
+      "language": "Marathi",
+      "certificate": "A"
+    },
+    {
+      "title": "Patrisarkar 1942",
+      "language": "Marathi",
+      "certificate": "UA13+"
+    },
+    {
+      "title": "Aadi Anant",
+      "language": "Marathi",
+      "certificate": "UA13+"
+    },
+    {
+      "title": "ENE Repeat",
+      "language": "Telugu",
+      "certificate": "UA16+"
+    },
+    {
+      "title": "I Play Rocky",
+      "language": "English",
+      "certificate": "A"
+    },
+    {
+      "title": "Pyre",
+      "language": "Hindi",
+      "certificate": "U",
+      "year": 2026
+    },
+    {
+      "title": "Sathyavan Savithiri",
+      "language": "Tamil",
+      "certificate": "UA16+"
+    }
+  ],
+  "left_out": [
+    {
+      "title": "BTS World Tour Arirang In Kaohsiung: Live Viewing",
+      "reason": "Concert screening, not a film"
+    },
+    {
+      "title": "Dune: Part Three",
+      "reason": "Certificate TBA in Pune listings: advance booking, not yet playing"
+    },
+    {
+      "title": "AOT",
+      "reason": "Tamil-dubbed version of Aakasamlo Oka Tara (same film); listed once, in Telugu"
+    }
+  ]
+}

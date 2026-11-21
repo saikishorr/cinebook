@@ -95,7 +95,6 @@ Keep these exactly as they are now:
 - the 23:15 last-start rule and the 20-minute turnaround;
 - `ON CONFLICT (screen_id, start_time)`;
 - the advisory lock;
-- the DynamoDB hold check in `clear_hidden_shows`;
 - the demo wording.
 
 ## Acceptance checks (write these as tests on a fixture of about 6 cinemas and about 12 films, plus run them on the real database and report the numbers)

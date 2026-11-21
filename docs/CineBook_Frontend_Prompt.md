@@ -991,7 +991,7 @@ Use only system fonts (for example a `font-family` stack such as `ui-sans-serif,
 
 Do NOT load external fonts, icon libraries, images or CDNs, and do NOT add new npm packages. Build icons with inline SVG or Unicode characters.
 
-This keeps the site self-contained so it can later be uploaded to Amazon S3 and served through CloudFront without extra dependencies.
+This keeps the site self-contained, with no extra dependencies.
 
 ---
 

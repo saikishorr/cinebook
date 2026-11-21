@@ -44,7 +44,7 @@ powershell.exe -NoProfile -ExecutionPolicy Bypass -File .\scripts\import-cinemas
 
 Relayout skips every screen with any booking, including cancelled bookings, or a live hold. It
 preserves legacy cinema seats. Section names and grid dimensions are persisted with screens so
-the deployed API needs no layout JSON files. Recliners use the show's recliner price; the scheduler
+the running API needs no layout JSON files. Recliners use the show's recliner price; the scheduler
 sets it to 1.8 times Premium, rounded to INR 10. Legacy maps have null grid positions.
 
 ## Film admin and persistence
@@ -57,7 +57,7 @@ and SHA-256 token hashes. Admin responses are never cached. Existing API prefixe
 `PATCH /admin/movies/{id}`. Activation schedules that film immediately, replacing only unbooked,
 unheld future slots where needed and preserving the other films' daily coverage. Deactivation
 preserves booked and held shows. Add a film using `POST /admin/movies`, with a TMDB id or manually.
-TMDB search/details require `TMDB_API_KEY` in `backend/.env` (or the server environment); the key is
+TMDB search/details require `TMDB_API_KEY` in `backend/.env`; the key is
 never returned to the browser.
 
 **Admin changes are the live database state. Running `scripts/import-movies.ps1` again fully
@@ -97,5 +97,5 @@ Rajhans times and the protected show kept outside its cinema's weekly line-up.
 .\.venv\Scripts\python backend\eval\chat_eval.py --provider fake --delay 0
 ```
 
-Tests fake TMDB, AWS and model calls; database tests use local PostgreSQL and skip when it is
+Tests fake TMDB and model calls; database tests use local PostgreSQL and skip when it is
 unreachable. Fake-provider evaluation checks API, context and response handling, not model quality.

@@ -5,7 +5,6 @@ local mode, migrations 004–008 and the Part C API from `docs/CODEX_BACKEND_PRO
 for the hard rules, which all still apply. In short:
 - Do not touch `frontend/`.
 - Only **add** API fields; never remove or rename one.
-- The cloud defaults must keep working.
 - Use plain psycopg SQL and numbered migrations with `_down.sql` files, also appended to `db/schema.sql`.
 - Scripts must work in PowerShell 5.1.
 - Tests must pass with no network.

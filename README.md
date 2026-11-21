@@ -5,17 +5,16 @@
 ![FastAPI](https://img.shields.io/badge/FastAPI-0.165-009688?logo=fastapi&logoColor=white)
 ![React](https://img.shields.io/badge/React-19-61DAFB?logo=react&logoColor=black)
 ![PostgreSQL](https://img.shields.io/badge/PostgreSQL-16%2B-4169E1?logo=postgresql&logoColor=white)
-![AWS](https://img.shields.io/badge/AWS-ap--south--1-FF9900?logo=amazonaws&logoColor=white)
-![Terraform](https://img.shields.io/badge/Terraform-IaC-7B42BC?logo=terraform&logoColor=white)
+![Vite](https://img.shields.io/badge/Vite-8-646CFF?logo=vite&logoColor=white)
 
-CineBook is a full-stack movie ticket booking system built step by step on AWS as a learning and
-training project. A customer browses real Pune cinemas, picks seats on a live seat map, holds them for
-5 minutes, pays (simulated) and gets a confirmation email plus a demo SMS. The SMS links to a chat
-assistant that answers questions about that booking.
+CineBook is a full-stack movie ticket booking system, built step by step as a learning and training
+project. A customer browses real Pune cinemas, picks seats on a live seat map, holds them for 5 minutes,
+pays (simulated) and gets a confirmation email plus a demo SMS. The SMS links to a chat assistant
+that answers questions about that booking.
 
 > **Training project.** Every showtime, price, auditorium and seat map is generated.
-> **DEMO TICKET - not valid for entry.** CineBook is not affiliated with any cinema, and no real SMS
-> or payment is ever sent.
+> **DEMO TICKET - not valid for entry.** CineBook is not affiliated with any cinema, and no real SMS,
+> email or payment is ever sent.
 
 ---
 
@@ -37,36 +36,30 @@ assistant that answers questions about that booking.
 - Add films from TMDB or by hand; activating a film schedules it straight away.
 
 **Engineering**
-- Pluggable backends: seat holds in **DynamoDB or PostgreSQL**, bookings through **SQS or inline**,
-  email through **SES or a local outbox**. The whole app runs locally with no AWS account.
-- Idempotent booking worker that runs locally or as **AWS Lambda**, and handles duplicate SQS deliveries safely.
-- Versioned SQL migrations (with down scripts), rate limiting, structured logging.
-- Infrastructure as code (Terraform) with a single `running` switch that pauses the paid resources.
+- Seat holds in PostgreSQL with a unique (show, seat) key and an expiry time, so a seat can never be double-booked.
+- Confirmation runs right after each booking and is safe to repeat: nothing is charged twice, and no duplicate SMS is written.
+- Stale pending bookings are swept automatically, which frees their seats.
+- Versioned SQL migrations (with down scripts), rate limiting, structured logging with request IDs.
+- Demo emails saved as `.eml` files in `backend/outbox/`, so nothing leaves your machine.
 - CI on every push: ruff, pytest against a real PostgreSQL (Python 3.12 and 3.13), oxlint and a frontend build.
 
 ## Architecture
 
 ```mermaid
 flowchart LR
-    U[Customer / Staff browser] --> CF[CloudFront + S3<br/>React SPA]
-    CF -->|/api| ALB[Application Load Balancer]
-    ALB --> API[FastAPI on EC2<br/>Docker, Auto Scaling]
-    API --> RDS[(RDS PostgreSQL)]
-    API --> DDB[(DynamoDB<br/>seat holds)]
-    API --> SQS[[SQS FIFO<br/>booking-requests]]
+    U[Customer / Staff browser] --> FE[React SPA<br/>Vite dev server :5173]
+    FE -->|REST / JSON| API[FastAPI :8000]
+    API --> DB[(PostgreSQL<br/>bookings, seat holds,<br/>chat links, SMS)]
+    API -->|after each booking| W[Confirmation worker<br/>in-process]
+    W --> DB
+    W --> OUT[backend/outbox/<br/>demo emails]
     API --> LLM[Gemini API<br/>chat assistant]
-    SQS --> L[Lambda worker]
-    L --> RDS
-    L --> DDB
-    L --> SES[SES email]
-    L --> SMS[(Demo SMS +<br/>chat link)]
-    API -.-> CW[CloudWatch<br/>logs, dashboard, alarm]
-    L -.-> CW
+    API -.->|import scripts| TMDB[TMDB / OpenStreetMap]
 ```
 
-All cloud resources live in a VPC (public, app and database subnets) in `ap-south-1` (Mumbai). A NAT
-instance is used instead of a NAT gateway to keep costs low. In **local mode** the same API uses
-PostgreSQL for holds, runs the worker inline and writes emails to `backend/outbox/`.
+**Booking flow:** hold seats → create booking (`PENDING`) → confirmation worker marks it `CONFIRMED`,
+writes the chat link and demo SMS, releases the hold and writes the email → the customer opens the SMS
+link and chats with the assistant.
 
 ## Tech stack
 
@@ -74,29 +67,25 @@ PostgreSQL for holds, runs the worker inline and writes emails to `backend/outbo
 |---|---|
 | Frontend | React 19, React Router 7, Vite 8, Tailwind CSS 4, oxlint |
 | Backend API | Python 3.12+, FastAPI, Uvicorn, Pydantic Settings, psycopg 3 |
-| Worker | Python (AWS Lambda with an SQS trigger, or local) |
-| Data | PostgreSQL (RDS), DynamoDB |
+| Database | PostgreSQL 16+ |
 | AI | Google Gemini (free tier); a fake provider for tests |
-| Cloud | VPC, EC2 Auto Scaling, ALB, ECR, RDS, DynamoDB, SQS, Lambda, SES, SSM Parameter Store, CloudFront, CloudWatch |
-| IaC and ops | Terraform, Docker, PowerShell and Python scripts |
-| CI | GitHub Actions |
+| Data sources | TMDB (films), OpenStreetMap (cinema locations) |
+| Tooling | PowerShell and Python scripts, ruff, pytest, GitHub Actions |
 
 ## Repository layout
 
 | Folder | Contents |
 |---|---|
-| [`backend/`](backend) | FastAPI app (`app/`), routers, chat engine, tests, chat evaluation, Dockerfile |
+| [`backend/`](backend) | FastAPI app (`app/`), routers, chat engine, tests, chat evaluation |
 | [`frontend/`](frontend) | React website: customer pages, seat map, chat panel, admin console |
-| [`worker/`](worker) | Booking confirmation worker (SQS to PostgreSQL, DynamoDB and SES) and demo SMS |
+| [`worker/`](worker) | Booking confirmation and demo SMS, run by the API after each booking |
 | [`db/`](db) | `schema.sql`, seed data, migrations `002` to `013`, cinema and seat-layout data, SQL tests |
-| [`infra/`](infra) | Terraform, IAM policies, EC2 user data, CloudFront, monitoring, pause/resume scripts |
-| [`scripts/`](scripts) | Local setup and run, cinema/movie importers, show scheduler, admin creation |
-| [`guides/`](guides) | 16 step-by-step Word guides (Part 1 to Part 16) |
+| [`scripts/`](scripts) | Local setup and run, cinema/movie importers, show scheduler, admin creation, Gemini check |
 | [`docs/`](docs) | Project journal, operations guide, design notes |
 
-## Quick start (local, no AWS)
+## Quick start
 
-Requirements: **Windows PowerShell 5.1**, **Python 3.12 or 3.13**, **Node 24**, **PostgreSQL 16+**.
+You need **Windows PowerShell 5.1**, **Python 3.12 or 3.13**, **Node 24** and **PostgreSQL 16+**.
 (`check-tools.ps1` checks the installed tools.)
 
 ```powershell
@@ -104,7 +93,7 @@ Requirements: **Windows PowerShell 5.1**, **Python 3.12 or 3.13**, **Node 24**, 
 py -3.12 -m venv .venv
 .\.venv\Scripts\python -m pip install -r backend\requirements-dev.txt
 
-# 2. Configuration: set DATABASE_URL and uncomment the "Local mode" lines
+# 2. Configuration: set DATABASE_URL (and optionally the demo SMS, Gemini and TMDB values)
 Copy-Item backend\.env.example backend\.env
 Copy-Item frontend\.env.example frontend\.env
 notepad backend\.env
@@ -128,30 +117,29 @@ powershell.exe -NoProfile -ExecutionPolicy Bypass -File .\scripts\run-local.ps1
 | http://localhost:8000/docs | Interactive API docs (Swagger) |
 | http://localhost:5173/admin | Admin console |
 
-A Gemini key (`GEMINI_API_KEY`) is optional: without it, bookings, SMS links and booking summaries
-still work, but conversational chat replies need a model. `TMDB_API_KEY` is only needed to import films.
+A Gemini key (`GEMINI_API_KEY`) is optional. Without it, bookings, SMS links and booking summaries
+still work, but conversational chat replies need a model. `python scripts\check-gemini.py` checks a
+key and saves a working model. `TMDB_API_KEY` is only needed to import films.
 See [START-HERE.md](START-HERE.md) for the full walkthrough.
 
 ## Configuration
 
 Copy each `.env.example` to `.env`. These are the main backend settings:
 
-| Variable | Purpose | Local value |
+| Variable | Purpose | Example |
 |---|---|---|
 | `DATABASE_URL` | PostgreSQL connection string | `postgresql://user:pass@localhost:5432/moviebooking` |
-| `HOLDS_BACKEND` | `dynamodb` or `postgres` | `postgres` |
-| `QUEUE_BACKEND` | `sqs` or `inline` | `inline` |
-| `EMAIL_BACKEND` | `ses` or `log` | `log` |
 | `HOLD_SECONDS` | Seat hold duration | `300` |
 | `CORS_ORIGINS` | Allowed website origins | `http://localhost:5173` |
-| `API_PREFIX` | Empty locally, `/api` in the cloud | *(empty)* |
-| `SMS_DEMO_NUMBERS` | Numbers allowed to receive demo SMS | `+919800000000` |
+| `API_PREFIX` | Path prefix for the API (empty = `/`) | *(empty)* |
+| `SMS_DEMO_NUMBERS` | Numbers allowed to receive a demo SMS | `+919800000000` |
 | `DEMO_PHONE_ACCESS_CODE` | Code that opens the Demo Phone inbox | your choice |
 | `CHAT_PROVIDER` / `CHAT_MODEL_ID` / `GEMINI_API_KEY` | Chat assistant model | `gemini` / model id / your key |
 | `TMDB_API_KEY` | Film import and admin film search | your key |
+| `CANCEL_CUTOFF_MINUTES` | Latest cancellation before the show | `120` |
 | `REQUIRE_LOGIN_FOR_BOOKING` | Set `false` to allow guest booking | `true` |
 
-> 🔒 Never commit `.env`, `demo.auto.tfvars` or `terraform.tfstate`. The `.gitignore` already excludes them.
+> 🔒 Never commit `.env` files. The `.gitignore` already excludes them.
 
 ## Testing
 
@@ -163,36 +151,22 @@ Copy each `.env.example` to `.env`. These are the main backend settings:
 Push-Location frontend; npm run lint; npm run build; Pop-Location
 ```
 
-The tests use fakes for TMDB, AWS and model calls. Database tests use a local PostgreSQL and are skipped
-when it is unreachable. With the real model, the chat assistant passed **39 of 39** evaluation questions
-in 8 groups ([report](backend/eval/chat_eval_report.md)).
-
-## Deploying to AWS
-
-The cloud build follows guides **Part 7 to Part 16** in [`guides/`](guides). In short:
-
-1. Build and push the API image to ECR (`backend/Dockerfile`).
-2. Fill in your own values (`<ACCOUNT_ID>`, AMI, sender email, `demo.auto.tfvars`) and run Terraform in `infra/terraform`.
-3. Package the Lambda worker with `infra/lambda/build.ps1`.
-4. Store secrets in SSM Parameter Store (`infra/scripts/setup-demo-sms.ps1`, `push-chat-key.py`).
-5. Use `infra/scripts/pause.ps1` / `resume.ps1` to stop and start the hourly-billed resources.
-
-While it is running, the system costs about **USD 0.08 per hour**. Pause it whenever you stop working.
+The tests use fakes for TMDB and model calls and never touch the network. Database tests use a local
+PostgreSQL and are skipped when it is unreachable. With the real model, the chat assistant passed
+**39 of 39** evaluation questions in 8 groups ([report](backend/eval/chat_eval_report.md)).
 
 ## Documentation
 
-- [START-HERE.md](START-HERE.md): setup, what is (and is not) included, guide order, cost, safety
+- [START-HERE.md](START-HERE.md): setup, what is (and is not) included, safety, accounts and roles
 - [docs/OPERATIONS.md](docs/OPERATIONS.md): cinema/film imports, editable seat layouts, film admin, weekly programmes
 - [docs/PROJECT-JOURNAL.md](docs/PROJECT-JOURNAL.md): how the project was built, decisions and problems solved
 - [docs/phase3-chatbot-design.md](docs/phase3-chatbot-design.md): chat assistant design
-- [CineBook-Complete-Project-Documentation.pdf](CineBook-Complete-Project-Documentation.pdf): all guides in one PDF
-- [`guides/`](guides): Part 1 to Part 16 Word guides (Part 12, CloudFront, is not included)
 
 ## Project phases
 
 | Phase | Scope |
 |---|---|
-| 1 | Booking system on AWS: database, API, seat holds, website, SQS/Lambda/SES, Docker, VPC, RDS, EC2, ALB, Terraform |
+| 1 | Booking system: database, API, seat holds, website, booking confirmation and email |
 | 2 | Booking SMS with a chat link (demo inbox, consent, rate limits) |
 | 3 | Chat assistant (Gemini): booking-aware, read-only, refuses off-topic questions |
 | 4 | Real Pune cinemas, editable seat layouts, weekly programmes, TMDB films, customer accounts, role-based admin console and audit log |

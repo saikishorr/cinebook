@@ -1,15 +1,15 @@
 # CineBook - start here
 
 ## Why this package exists
-It is a complete, working example of a small cloud application, handed over so that you can study it,
-run it on your own computer and build your own copy in your own AWS account.
+It is a complete, working example of a small full-stack application, shared so that you can study it
+and run it on your own computer.
 
 ## What it is
 CineBook is a movie ticket booking system: a customer picks seats, pays (simulated), receives a confirmation
 email and a demo SMS with a link, and can ask a chat assistant about the booking.
 
 ## What it is for
-Learning and training. It was built one step at a time, and every step has a written guide.
+Learning and training. It was built one step at a time.
 It is not a production system and it holds no real customer data.
 
 ## Which parts it contains
@@ -17,34 +17,34 @@ It is not a production system and it holds no real customer data.
 |---|---|---|
 | `backend` | The API, including the chat assistant | Python, FastAPI |
 | `frontend` | The website | React (Vite) |
-| `worker` | Confirms bookings, sends the email, writes the demo SMS | Python (runs locally or as AWS Lambda) |
+| `worker` | Confirms bookings, writes the demo SMS and the email | Python (runs inside the API process) |
 | `db` | Database structure, sample data, upgrades and tests | PostgreSQL |
-| `infra` | AWS infrastructure and helper scripts | Terraform, PowerShell, Python |
-| `guides` | 16 step-by-step Word guides | - |
-| `docs` | Design notes and the project journal | - |
+| `scripts` | Setup, run, import and admin helpers | PowerShell, Python |
+| `docs` | Design notes, the operations guide and the project journal | - |
 
 ## What you need
-1. A Windows computer with the tools in `guides\Project-Software-Installation-Guide.docx`.
+
+1. A Windows computer with Python 3.12 or 3.13, Node 24, PostgreSQL 16 or newer, and Git.
    `check-tools.ps1` checks that they are installed.
-2. Your own AWS account (Part 1 of the guides).
-3. Your own Gemini API key for the chat assistant (Part 16). The free tier is enough.
+2. Optional: your own Gemini API key for the chat assistant. The free tier is enough.
+3. Optional: a free TMDB API key to import the current film listings.
 
-## Run locally without AWS
+## Run it
 
-Python 3.12 or 3.13, Node 24 and PostgreSQL 18 are enough. In PowerShell 5.1, from the project root:
+In PowerShell 5.1, from the project root:
 
 ```powershell
 py -3.12 -m venv .venv
 .\.venv\Scripts\python -m pip install -r backend\requirements-dev.txt
 Copy-Item backend\.env.example backend\.env
+Copy-Item frontend\.env.example frontend\.env
 notepad backend\.env
 ```
 
-Set `DATABASE_URL` to your local PostgreSQL credentials. Uncomment the four Local mode settings:
-`HOLDS_BACKEND=postgres`, `QUEUE_BACKEND=inline`, `EMAIL_BACKEND=log`, and the localhost `CORS_ORIGINS`.
-Keep `API_PREFIX` empty. Set `SMS_DEMO_NUMBERS` and `DEMO_PHONE_ACCESS_CODE` for the demo inbox.
-No AWS queue URL or credentials are used in inline mode. A Gemini key is optional; without a configured
-model the SMS link and booking summary still work, but conversational replies require a model.
+Set `DATABASE_URL` to your local PostgreSQL credentials. Keep `API_PREFIX` empty. Set `SMS_DEMO_NUMBERS`
+and `DEMO_PHONE_ACCESS_CODE` for the demo inbox (or run `.\scripts\setup-demo-sms.ps1`). A Gemini key is
+optional; without a configured model the SMS link and booking summary still work, but conversational
+replies require a model. `python scripts\check-gemini.py` checks a key and saves a working model.
 
 ```powershell
 powershell.exe -NoProfile -ExecutionPolicy Bypass -File .\scripts\setup-local.ps1
@@ -55,9 +55,10 @@ powershell.exe -NoProfile -ExecutionPolicy Bypass -File .\scripts\run-local.ps1
 ```
 
 Open http://localhost:5173 (API docs: http://localhost:8000/docs). The two terminal windows run the API
-and frontend; close them to stop. Confirmation runs in the API process; do not start the SQS worker.
-Demo emails are saved in `backend/outbox/`. Re-run setup to apply outstanding migrations and add shows
-for today. Existing data is preserved. `setup-local.ps1 -Reset` asks for `RESET` before deleting data.
+and frontend; close them to stop. Booking confirmation runs inside the API process, right after each booking.
+Seat holds are stored in PostgreSQL. Demo emails are saved in `backend/outbox/`. Re-run setup to apply
+outstanding migrations and add shows for today. Existing data is preserved. `setup-local.ps1 -Reset` asks
+for `RESET` before deleting data.
 The commands above allow scripts for those processes only, so they work with Windows' default
 restricted execution policy without changing your machine's policy. If a database password contains
 `@`, encode it as `%40` in `DATABASE_URL` (and encode other URL reserved characters similarly).
@@ -99,65 +100,20 @@ Movie metadata uses the TMDB API; CineBook is not endorsed or certified by TMDB.
 ## What is deliberately NOT in this package
 Every secret and every personal detail has been removed. You create your own:
 
-| You create | How | Guide |
-|---|---|---|
-| `backend\.env` and `worker\.env` | Copy each `.env.example` to `.env` and fill in your values | Parts 3 and 6 |
-| `frontend\.env` | Copy `frontend\.env.example` to `frontend\.env` | Part 5 |
-| Database password | You choose it; it is stored in AWS Parameter Store | Part 9 |
-| Demo phone numbers and Demo Phone access code | `infra\scripts\setup-demo-sms.ps1` | Part 15 |
-| Gemini API key | `infra\scripts\check-gemini.py`, then `infra\scripts\push-chat-key.py` | Part 16 |
-| Sender email address | Verify your own address in SES; set `ses_sender_email` in `infra\terraform\variables.tf` | Parts 6 and 14 |
-| Terraform state | Created by Terraform in your own account; never share it | Part 14 |
-
-Placeholders to replace with your own values:
-- `you@example.com` in `infra\terraform\variables.tf`
-- `<ACCOUNT_ID>` in `infra\iam\*.json`
-- `<AMI_ID>` and `<APP_SECURITY_GROUP_ID>` in `infra\ec2\launch-template.json`
+| You create | How |
+|---|---|
+| `backend\.env` and `worker\.env` | Copy each `.env.example` to `.env` and fill in your values |
+| `frontend\.env` | Copy `frontend\.env.example` to `frontend\.env` |
+| Database password | You choose it when you install PostgreSQL |
+| Demo phone numbers and Demo Phone access code | `.\scripts\setup-demo-sms.ps1` |
+| Gemini API key | `python scripts\check-gemini.py` |
+| TMDB API key | Free key from [TMDB settings](https://www.themoviedb.org/settings/api), saved as `TMDB_API_KEY` |
 
 Folders that are rebuilt on your computer and are therefore not included:
-`.venv`, `frontend\node_modules`, `frontend\dist`, `worker\build`, `worker\lambda.zip`, `infra\terraform\.terraform`.
-
-## The order to work in
-The code is complete. Use the guides to understand each part and to create your own AWS resources.
-Where a guide asks you to write a file, the finished file is already in this package.
-
-| Guide | What it builds |
-|---|---|
-| Part 1 | Workstation and AWS account setup |
-| Part 2 | PostgreSQL database on your computer |
-| Part 3 | Backend API |
-| Part 4 | Seat holds in DynamoDB |
-| Part 5 | React website |
-| Part 6 | Bookings through a queue, a worker and email |
-| Part 7 | Docker image in ECR |
-| Part 8 | VPC network |
-| Part 9 | RDS database in AWS |
-| Part 10 | EC2 Auto Scaling |
-| Part 11 | Load balancer |
-| Part 13 | Lambda worker and monitoring |
-| Part 14 | Terraform, with pause and resume |
-| Part 15 | Booking SMS with a chat link (demo inbox) |
-| Part 16 | Chat assistant |
-
-Notes:
-- **Part 12 (CloudFront, the public website address) is not included.** Until you add it, the website is opened
-  from your own computer, as Parts 13 and 16 show.
-- `db\schema.sql` already contains the tables added in Parts 15 and 16. The upgrade files in `db\migrations`
-  are safe to run on top of it.
-- The Terraform code was written to take over a system that had first been built by hand (Parts 8 to 13).
-  To build directly from the code instead, read Part 14, section 14.6, first.
-- The region used throughout is `ap-south-1`. To use another one, change `region` in `variables.tf` and the
-  region line near the top of each script.
-
-## Cost
-- Parts 1 to 7 run mostly on your computer and cost nothing or almost nothing.
-- From Part 8 the system in AWS costs roughly USD 0.08 per hour while it is running (check current prices).
-- Run `.\infra\scripts\pause.ps1` whenever you stop working, and `.\infra\scripts\resume.ps1` to continue.
-- When you are finished for good, Part 14, section 14, removes everything.
+`.venv`, `frontend\node_modules`, `frontend\dist`, `backend\outbox`.
 
 ## Keep it safe
-- Never put a `.env` file, `demo.auto.tfvars` or `terraform.tfstate` into Git, email or chat.
-  The `.gitignore` file in this package already excludes them.
+- Never put a `.env` file into Git, email or chat. The `.gitignore` file in this package already excludes them.
 - Never paste an API key or a password anywhere except the prompt of the script that asks for it.
 
 ## Customer accounts and the admin console

@@ -25,17 +25,16 @@ When the question is in scope but the answer is not in the supplied information:
 | Short, plain answers | Answer length limit; no links other than the CineBook site |
 | Cost and abuse limits | Message length, messages per link per hour, output token limit |
 
-## Settings (backend/.env locally; Parameter Store in AWS)
+## Settings (backend/.env)
 | Setting | Default | Meaning |
 |---|---|---|
-| `CHAT_PROVIDER` | `gemini` | Which model service the assistant calls: `gemini`, `bedrock`, or `fake` (tests) |
+| `CHAT_PROVIDER` | `gemini` | Which model service the assistant calls: `gemini`, or `fake` (tests) |
 | `CHAT_MODEL_ID` | set by the check script | The model the assistant uses; empty = chat switched off |
-| `GEMINI_API_KEY` | set by `infra\scripts\check-gemini.py` | Secret key for the Gemini API. Never commit it; SecureString in AWS |
+| `GEMINI_API_KEY` | set by `scripts/check-gemini.py` | Secret key for the Gemini API. Never commit it |
 | `CHAT_MAX_MESSAGE_CHARS` | 500 | Longest customer message accepted |
 | `CHAT_MAX_OUTPUT_TOKENS` | 300 | Longest answer (about 200 words) |
 | `CHAT_MESSAGES_PER_HOUR` | 30 | Per chat link |
 | `CHAT_HISTORY_TURNS` | 8 | Earlier messages sent to the model for context |
-| `BEDROCK_REGION` | same as `AWS_REGION` | Where Bedrock is called (only for `CHAT_PROVIDER=bedrock`) |
 
 ## Model choice
 The model connection is one small module with a provider switch, so the rest of the assistant does not
@@ -45,8 +44,5 @@ depend on any one vendor.
   Free-tier requests are rate-limited, and Google may use free-tier content to improve its products, so the
   assistant sends only the first name and booking details (never email or phone), and demo users should not
   type personal information into the chat.
-- **Amazon Bedrock (alternative).** Runs inside the AWS account with IAM permissions instead of a key.
-  New AWS accounts can have a zero daily token quota and Anthropic models need a one-time use-case form;
-  `infra\scripts\check-bedrock.py` reports both. Switch by setting `CHAT_PROVIDER=bedrock` and a Bedrock model ID.
 
 A small, fast model is enough: answers are short and come from supplied text.

@@ -2,7 +2,7 @@
 
 This is the third backend round. The hard rules in `docs/CODEX_BACKEND_PROMPT.md` still apply. In short:
 - Do not touch `frontend/`.
-- API changes are additive only, and the cloud defaults must keep working.
+- API changes are additive only.
 - Use plain psycopg SQL and numbered migrations with `_down.sql` files, also appended to `db/schema.sql`.
 - Scripts must work in PowerShell 5.1; no new dependencies (stdlib only for hashing).
 - Tests must pass offline.
